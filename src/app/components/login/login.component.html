@@ -1,0 +1,48 @@
+<div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
+  <div class="card p-4 shadow-lg border-0 text-center card-terminal" style="max-width: 480px; width: 100%; border-radius: 12px;">
+    <div class="mb-4">
+      <div class="fs-1 text-primary mb-2">✈️</div>
+      <h3 class="fw-bold mb-1" style="color: #0284c7;">Gestión Aeronáutica</h3>
+      <p class="text-muted small">Sistema de Control de Vuelos y Flota</p>
+    </div>
+
+    <form (ngSubmit)="login()">
+      <div class="mb-3 text-start">
+        <label class="form-label fw-semibold text-secondary small">Usuario</label>
+        <input type="text" class="form-control form-control-lg fs-6" [(ngModel)]="username" name="username" placeholder="Ej: admin" required>
+      </div>
+
+      <div class="mb-3 text-start">
+        <label class="form-label fw-semibold text-secondary small">Contraseña</label>
+        <input type="password" class="form-control form-control-lg fs-6" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger py-2 mb-3 small text-center">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm" [disabled]="loading">
+        <span *ngIf="!loading">Ingresar al Sistema</span>
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+      </button>
+    </form>
+
+    <div class="mt-4 pt-3 border-top text-start small">
+      <p class="fw-bold mb-2 text-dark text-center">Credenciales Rápidas de Prueba:</p>
+      <div class="d-grid gap-2">
+        <button type="button" class="btn btn-outline-primary btn-sm d-flex justify-content-between align-items-center" (click)="loginComo('admin', 'admin777')">
+          <span><strong>admin</strong> (Administrador)</span>
+          <span class="badge bg-primary">ROOT</span>
+        </button>
+        <button type="button" class="btn btn-outline-info btn-sm text-dark d-flex justify-content-between align-items-center" (click)="loginComo('piloto', '123456')">
+          <span><strong>piloto</strong> (Tripulación)</span>
+          <span class="badge bg-info text-dark">PILOTO</span>
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm d-flex justify-content-between align-items-center" (click)="loginComo('azafata', '123456')">
+          <span><strong>azafata</strong> (Tripulación)</span>
+          <span class="badge bg-secondary">AZAFATA</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+<app-navbar></app-navbar>
+
+<div class="container mt-3">
+  <div *ngIf="apiService.obtenerToken()" class="alert alert-success d-flex justify-content-between align-items-center py-2 mb-4">
+    <span><strong>Autenticación exitosa:</strong> Conectado a la red de microservicios.</span>
+    <div>
+      <span class="badge bg-primary me-2">ROL: {{ apiService.obtenerRol() || 'USUARIO' }}</span>
+      <span class="badge bg-success">JWT ACTIVO</span>
+    </div>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>

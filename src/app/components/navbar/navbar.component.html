@@ -1,0 +1,26 @@
+<nav class="navbar navbar-expand-lg navbar-dark navbar-terminal mb-4">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" routerLink="/vuelos">
+      <span class="fs-3 me-2">✈️</span>
+      <span class="fw-bold fs-4">Gestión Aeronáutica</span>
+    </a>
+
+    <div *ngIf="apiService.getToken()" class="d-flex align-items-center gap-3">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-row gap-3">
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold" routerLink="/vuelos" routerLinkActive="active">Vuelos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold" routerLink="/aviones" routerLinkActive="active">Aviones</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold" routerLink="/personal" routerLinkActive="active">Personal de Vuelo</a>
+        </li>
+      </ul>
+
+      <button class="btn btn-outline-light btn-sm ms-3" (click)="onLogout()">
+        Cerrar Sesión
+      </button>
+    </div>
+  </div>
+</nav>
