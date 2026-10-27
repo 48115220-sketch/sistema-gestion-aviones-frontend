@@ -15,8 +15,8 @@ export class AvionesComponent implements OnInit {
   personalList: any[] = [];
 
   modelo: string = '';
-  capacidadPersonas: number = 180;
-  capacidadEquipaje: number = 5000;
+  capacidadPersonas: number | null = 180;
+  capacidadEquipaje: number | null = 5000;
   personalId: number | null = null;
 
   modoEdicion: boolean = false;
@@ -33,26 +33,27 @@ export class AvionesComponent implements OnInit {
     return this.apiService.getHeaders();
   }
 
-  cargarAviones() {
+  cargarAviones(): void {
     this.http.get(this.apiUrlAviones, { headers: this.getHeaders() }).subscribe({
       next: (data: any) => this.aviones = data,
       error: (err) => console.error('Error al cargar aviones:', err)
     });
   }
 
-  cargarPersonal() {
+  cargarPersonal(): void {
     this.http.get(this.apiUrlPersonal, { headers: this.getHeaders() }).subscribe({
       next: (data: any) => this.personalList = data,
       error: (err) => console.error('Error al cargar personal:', err)
     });
   }
 
-  guardarAvion() {
+  guardarAvion(): void {
     const dto = {
       modelo: this.modelo,
       capacidadPersonas: this.capacidadPersonas,
       capacidadEquipaje: this.capacidadEquipaje,
-      personalId: this.personalId
+      personalId: this.personalId,
+      estado: 'EN_SERVICIO'
     };
 
     if (this.modoEdicion && this.idSeleccionado !== null) {
@@ -69,12 +70,27 @@ export class AvionesComponent implements OnInit {
           this.cargarAviones();
           this.limpiarFormulario();
         },
-        error: (err) => console.error('Error al crear avión:', err)
+        error: (err) => console.error('Error al guardar avión:', err)
       });
     }
   }
 
-  seleccionarParaEditar(avion: any) {
+  cambiarEstadoAvion(avion: any, nuevoEstado: string): void {
+    const dto = {
+      modelo: avion.modelo,
+      capacidadPersonas: avion.capacidadPersonas,
+      capacidadEquipaje: avion.capacidadEquipaje,
+      personalId: avion.personalId,
+      estado: nuevoEstado
+    };
+
+    this.http.put(`${this.apiUrlAviones}/${avion.id}`, dto, { headers: this.getHeaders() }).subscribe({
+      next: () => this.cargarAviones(),
+      error: (err) => console.error('Error al actualizar estado del avión:', err)
+    });
+  }
+
+  seleccionarParaEditar(avion: any): void {
     this.modoEdicion = true;
     this.idSeleccionado = avion.id;
     this.modelo = avion.modelo;
@@ -83,20 +99,13 @@ export class AvionesComponent implements OnInit {
     this.personalId = avion.personalId;
   }
 
-  eliminarAvion(id: number) {
-    this.http.delete(`${this.apiUrlAviones}/${id}`, { headers: this.getHeaders() }).subscribe({
-      next: () => this.cargarAviones(),
-      error: (err) => console.error('Error al eliminar avión:', err)
-    });
+  obtenerNombrePersonal(personalId: any): string {
+    if (!personalId) return 'Sin Asignar';
+    const p = this.personalList.find(item => item.id === Number(personalId));
+    return p ? `${p.nombre} ${p.apellido}` : `Personal #${personalId}`;
   }
 
-  obtenerNombrePersonal(id: number): string {
-    if (!id) return 'Sin asignar';
-    const p = this.personalList.find(item => item.id === id);
-    return p ? `${p.nombre} ${p.apellido}` : `Personal #${id}`;
-  }
-
-  limpiarFormulario() {
+  limpiarFormulario(): void {
     this.modoEdicion = false;
     this.idSeleccionado = null;
     this.modelo = '';

@@ -2,49 +2,57 @@
   <h4 class="text-primary">{{ modoEdicion ? 'Editar Vuelo' : 'Programar Nuevo Vuelo' }}</h4>
   <div class="row g-2">
     <div class="col-12 col-md-3">
-      <label class="form-label fw-bold">Código de Vuelo</label>
-      <input type="text" [(ngModel)]="codigo" placeholder="Ej: ARG-101" class="form-control">
+      <label class="form-label fw-bold">N° de Vuelo</label>
+      <input type="text" [(ngModel)]="codigo" placeholder="Ej: AR1302" class="form-control">
     </div>
     <div class="col-12 col-md-3">
       <label class="form-label fw-bold">Origen</label>
-      <input type="text" [(ngModel)]="origen" placeholder="Ej: Buenos Aires" class="form-control">
+      <input type="text" [(ngModel)]="origen" placeholder="Ej: Buenos Aires (EZE)" class="form-control">
     </div>
     <div class="col-12 col-md-3">
       <label class="form-label fw-bold">Destino</label>
-      <input type="text" [(ngModel)]="destino" placeholder="Ej: Madrid" class="form-control">
+      <input type="text" [(ngModel)]="destino" placeholder="Ej: Miami (MIA)" class="form-control">
     </div>
     <div class="col-12 col-md-3">
-      <label class="form-label fw-bold">Fecha y Hora</label>
-      <input type="datetime-local" [(ngModel)]="fechaHora" class="form-control">
+      <label class="form-label fw-bold">Hora Salida</label>
+      <input type="text" [(ngModel)]="fechaHora" placeholder="Ej: 08:30" class="form-control">
     </div>
   </div>
   <div class="mt-3 d-flex flex-wrap gap-2">
     <button (click)="guardarVuelo()" class="btn btn-primary">{{ modoEdicion ? 'Guardar Cambios' : 'Programar Vuelo' }}</button>
-    <button *ngIf="modoEdicion" (click)="limpiarFormulario()" class="btn btn-secondary">Cancelar</button>
+    <button *ngIf="modoEdicion" (click)="limpiarFormulario()" class="btn btn-secondary">Cancelar Edición</button>
   </div>
 </div>
 
 <div class="card p-3 shadow-sm card-terminal">
   <div class="d-flex justify-content-between align-items-center mb-2">
-    <h4 class="mb-0">Lista de Vuelos Programados</h4>
+    <h4 class="mb-0">Vuelos Programados y en Curso</h4>
     <button class="btn btn-sm btn-outline-primary" (click)="cargarVuelos()">Actualizar Lista</button>
   </div>
   <div class="table-responsive" *ngIf="vuelos.length > 0">
     <table class="table table-striped align-middle mt-2 mb-0">
       <thead class="table-dark">
         <tr>
-          <th>Código</th>
-          <th>Ruta</th>
-          <th>Fecha y Hora</th>
+          <th>ID</th>
+          <th>N° Vuelo</th>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Hora Salida</th>
+          <th>Avión Asignado</th>
           <th class="text-center">Estado</th>
           <th class="text-center" *hasRole="'ROOT'">Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let v of vuelos">
-          <td class="fw-bold text-primary">{{ v.codigo }}</td>
-          <td>{{ v.origen }} &rarr; {{ v.destino }}</td>
-          <td>{{ v.fechaHora | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ v.id }}</td>
+          <td class="fw-bold text-primary">{{ v.numeroVuelo || v.codigo }}</td>
+          <td>{{ v.origen }}</td>
+          <td>{{ v.destino }}</td>
+          <td>{{ v.horaSalida || v.fechaHora }}</td>
+          <td>
+            <span class="badge bg-primary">{{ obtenerNombreAvion(v.avionId) || 'Sin Asignar' }}</span>
+          </td>
           <td class="text-center">
             <span class="badge" [ngClass]="{
               'bg-success': v.estado === 'PROGRAMADO' || !v.estado,
@@ -54,10 +62,27 @@
               {{ v.estado || 'PROGRAMADO' }}
             </span>
           </td>
+
           <td class="text-center" *hasRole="'ROOT'">
             <div class="d-flex justify-content-center gap-1">
-              <button *ngIf="v.estado !== 'CANCELADO'" (click)="cambiarEstadoVuelo(v, 'CANCELADO')" class="btn btn-danger btn-sm">Cancelar</button>
-              <button *ngIf="v.estado !== 'CANCELADO'" (click)="cambiarEstadoVuelo(v, 'APLAZADO')" class="btn btn-warning btn-sm">Aplazar</button>
+              <button (click)="seleccionarParaEditar(v)" class="btn btn-warning btn-sm">Editar</button>
+
+              <button *ngIf="v.estado === 'CANCELADO'" 
+                      (click)="cambiarEstadoVuelo(v, 'PROGRAMADO')" 
+                      class="btn btn-success btn-sm">
+                Re-programar
+              </button>
+
+              <button *ngIf="v.estado !== 'CANCELADO'" 
+                      (click)="cambiarEstadoVuelo(v, 'APLAZADO')" 
+                      class="btn btn-outline-warning btn-sm">
+                Aplazar
+              </button>
+              <button *ngIf="v.estado !== 'CANCELADO'" 
+                      (click)="cambiarEstadoVuelo(v, 'CANCELADO')" 
+                      class="btn btn-danger btn-sm">
+                Cancelar
+              </button>
             </div>
           </td>
         </tr>

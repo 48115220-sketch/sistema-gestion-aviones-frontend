@@ -15,9 +15,11 @@ export class VuelosComponent implements OnInit {
   aviones: any[] = [];
 
   numeroVuelo: string = '';
+  codigo: string = '';
   origen: string = '';
   destino: string = '';
   horaSalida: string = '';
+  fechaHora: string = '';
   avionId: number | null = null;
 
   modoEdicion: boolean = false;
@@ -49,12 +51,16 @@ export class VuelosComponent implements OnInit {
   }
 
   guardarVuelo(): void {
+    const valCodigo = this.codigo || this.numeroVuelo;
+    const valHora = this.fechaHora || this.horaSalida;
+
     const dto = {
-      numeroVuelo: this.numeroVuelo,
+      numeroVuelo: valCodigo,
       origen: this.origen,
       destino: this.destino,
-      horaSalida: this.horaSalida,
-      avionId: this.avionId
+      horaSalida: valHora,
+      avionId: this.avionId,
+      estado: 'PROGRAMADO'
     };
 
     if (this.modoEdicion && this.idSeleccionado !== null) {
@@ -76,13 +82,31 @@ export class VuelosComponent implements OnInit {
     }
   }
 
+  cambiarEstadoVuelo(vuelo: any, nuevoEstado: string): void {
+    const dto = {
+      numeroVuelo: vuelo.numeroVuelo || vuelo.codigo,
+      origen: vuelo.origen,
+      destino: vuelo.destino,
+      horaSalida: vuelo.horaSalida || vuelo.fechaHora,
+      avionId: vuelo.avionId,
+      estado: nuevoEstado
+    };
+
+    this.http.put(`${this.apiUrlVuelos}/${vuelo.id}`, dto, { headers: this.getHeaders() }).subscribe({
+      next: () => this.cargarVuelos(),
+      error: (err) => console.error('Error al actualizar estado del vuelo:', err)
+    });
+  }
+
   seleccionarParaEditar(vuelo: any): void {
     this.modoEdicion = true;
     this.idSeleccionado = vuelo.id;
-    this.numeroVuelo = vuelo.numeroVuelo || vuelo.nombre;
+    this.numeroVuelo = vuelo.numeroVuelo || vuelo.codigo || '';
+    this.codigo = vuelo.codigo || vuelo.numeroVuelo || '';
     this.origen = vuelo.origen;
     this.destino = vuelo.destino;
-    this.horaSalida = vuelo.horaSalida;
+    this.horaSalida = vuelo.horaSalida || vuelo.fechaHora || '';
+    this.fechaHora = vuelo.fechaHora || vuelo.horaSalida || '';
     this.avionId = vuelo.avionId;
   }
 
@@ -103,9 +127,11 @@ export class VuelosComponent implements OnInit {
     this.modoEdicion = false;
     this.idSeleccionado = null;
     this.numeroVuelo = '';
+    this.codigo = '';
     this.origen = '';
     this.destino = '';
     this.horaSalida = '';
+    this.fechaHora = '';
     this.avionId = null;
   }
 }
