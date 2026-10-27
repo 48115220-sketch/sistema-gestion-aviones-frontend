@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class ApiService {
   private baseUrl = `http://${window.location.hostname}:8080`;
 
@@ -28,38 +30,42 @@ export class ApiService {
     localStorage.removeItem('jwt_token');
   }
 
-  obtenerRol(): string | null {
+  getHeaders(): HttpHeaders {
     const token = this.getToken();
-    if (!token) return null;
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+  }
+
+  obtenerRol(): string {
+    const token = this.getToken();
+    if (!token) return '';
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const rawRol = payload.rol || payload.role || (payload.roles && payload.roles[0]) || 'USUARIO';
-      return rawRol.replace('ROLE_', '').toUpperCase();
-    } catch {
-      return 'USUARIO';
+      const payloadBase64 = token.split('.')[1];
+      const payloadDecoded = JSON.parse(atob(payloadBase64));
+      const userRoles: string[] = payloadDecoded.roles || payloadDecoded.authorities || [];
+      if (userRoles.length > 0) {
+        return userRoles[0].replace('ROLE_', '');
+      }
+      return payloadDecoded.sub || '';
+    } catch (e) {
+      return '';
     }
   }
 
-  tieneRol(rolesPermitidos: string[]): boolean {
-    const rol = this.obtenerRol();
-    if (!rol) return false;
-    const rolesNormalizados = rolesPermitidos.map(r => r.replace('ROLE_', '').toUpperCase());
-    return rolesNormalizados.includes(rol) || rol === 'ROOT';
-  }
-
-  getVuelos(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/vuelos`);
-  }
-
-  crearVuelo(vuelo: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/vuelos`, vuelo);
-  }
-
-  getAviones(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/aviones`);
-  }
-
-  getPersonal(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/admin/personal`);
+  tieneRol(rolesEsperados: string[]): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const payloadDecoded = JSON.parse(atob(payloadBase64));
+      const userRoles: string[] = payloadDecoded.roles || payloadDecoded.authorities || [];
+      return rolesEsperados.some(role => 
+        userRoles.some(uRole => uRole === role || uRole === `ROLE_${role}`)
+      );
+    } catch (e) {
+      return true;
+    }
   }
 }
