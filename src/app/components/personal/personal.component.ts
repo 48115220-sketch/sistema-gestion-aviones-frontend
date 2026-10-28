@@ -36,14 +36,17 @@ export class PersonalComponent implements OnInit {
     return this.apiService.getHeaders();
   }
 
-  cargarPersonal() {
+  cargarPersonal(): void {
     this.http.get(this.apiUrl, { headers: this.getHeaders() }).subscribe({
       next: (data: any) => this.personal = data,
-      error: (err) => console.error('Error al cargar personal:', err)
+      error: (err) => {
+        const msg = err.error?.message || 'Error al cargar el personal.';
+        console.error(msg);
+      }
     });
   }
 
-  guardarPersonal() {
+  guardarPersonal(): void {
     this.cargando = true;
     const dto = {
       nombre: this.nombre,
@@ -61,7 +64,11 @@ export class PersonalComponent implements OnInit {
           this.limpiarFormulario();
           this.cargando = false;
         },
-        error: () => { this.cargando = false; }
+        error: (err) => {
+          this.cargando = false;
+          const msg = err.error?.message || 'Error al actualizar el registro de personal.';
+          alert(msg);
+        }
       });
     } else {
       this.http.post(this.apiUrl, dto, { headers: this.getHeaders() }).subscribe({
@@ -70,12 +77,16 @@ export class PersonalComponent implements OnInit {
           this.limpiarFormulario();
           this.cargando = false;
         },
-        error: () => { this.cargando = false; }
+        error: (err) => {
+          this.cargando = false;
+          const msg = err.error?.message || 'Error al registrar el personal.';
+          alert(msg);
+        }
       });
     }
   }
 
-  seleccionarParaEditar(p: any) {
+  seleccionarParaEditar(p: any): void {
     this.modoEdicion = true;
     this.idSeleccionado = p.id;
     this.nombre = p.nombre;
@@ -86,13 +97,17 @@ export class PersonalComponent implements OnInit {
     this.tipo = p.tipo;
   }
 
-  eliminarPersonal(id: number) {
+  eliminarPersonal(id: number): void {
     this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() }).subscribe({
-      next: () => this.cargarPersonal()
+      next: () => this.cargarPersonal(),
+      error: (err) => {
+        const msg = err.error?.message || 'Error al eliminar el registro de personal.';
+        alert(msg);
+      }
     });
   }
 
-  limpiarFormulario() {
+  limpiarFormulario(): void {
     this.modoEdicion = false;
     this.idSeleccionado = null;
     this.nombre = '';

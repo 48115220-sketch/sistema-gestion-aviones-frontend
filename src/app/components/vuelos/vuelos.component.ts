@@ -39,14 +39,20 @@ export class VuelosComponent implements OnInit {
   cargarVuelos(): void {
     this.http.get(this.apiUrlVuelos, { headers: this.getHeaders() }).subscribe({
       next: (data: any) => this.vuelos = data,
-      error: (err) => console.error('Error al cargar vuelos:', err)
+      error: (err) => {
+        const msg = err.error?.message || 'Error al cargar los vuelos.';
+        console.error(msg);
+      }
     });
   }
 
   cargarAviones(): void {
     this.http.get(this.apiUrlAviones, { headers: this.getHeaders() }).subscribe({
       next: (data: any) => this.aviones = data,
-      error: (err) => console.error('Error al cargar aviones:', err)
+      error: (err) => {
+        const msg = err.error?.message || 'Error al cargar los aviones.';
+        console.error(msg);
+      }
     });
   }
 
@@ -69,7 +75,10 @@ export class VuelosComponent implements OnInit {
           this.cargarVuelos();
           this.limpiarFormulario();
         },
-        error: (err) => console.error('Error al actualizar vuelo:', err)
+        error: (err) => {
+          const msg = err.error?.message || 'Error al actualizar el vuelo.';
+          alert(msg);
+        }
       });
     } else {
       this.http.post(this.apiUrlVuelos, dto, { headers: this.getHeaders() }).subscribe({
@@ -77,7 +86,10 @@ export class VuelosComponent implements OnInit {
           this.cargarVuelos();
           this.limpiarFormulario();
         },
-        error: (err) => console.error('Error al guardar vuelo:', err)
+        error: (err) => {
+          const msg = err.error?.message || 'Error al guardar el vuelo.';
+          alert(msg);
+        }
       });
     }
   }
@@ -94,7 +106,10 @@ export class VuelosComponent implements OnInit {
 
     this.http.put(`${this.apiUrlVuelos}/${vuelo.id}`, dto, { headers: this.getHeaders() }).subscribe({
       next: () => this.cargarVuelos(),
-      error: (err) => console.error('Error al actualizar estado del vuelo:', err)
+      error: (err) => {
+        const msg = err.error?.message || 'Error al cambiar el estado del vuelo.';
+        alert(msg);
+      }
     });
   }
 
@@ -113,7 +128,10 @@ export class VuelosComponent implements OnInit {
   eliminarVuelo(id: number): void {
     this.http.delete(`${this.apiUrlVuelos}/${id}`, { headers: this.getHeaders() }).subscribe({
       next: () => this.cargarVuelos(),
-      error: (err) => console.error('Error al eliminar vuelo:', err)
+      error: (err) => {
+        const msg = err.error?.message || 'Error al eliminar el vuelo.';
+        alert(msg);
+      }
     });
   }
 
