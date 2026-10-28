@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
@@ -77,7 +78,7 @@ export class VuelosComponent implements OnInit {
         },
         error: (err) => {
           const msg = err.error?.message || 'Error al actualizar el vuelo.';
-          alert(msg);
+          Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
         }
       });
     } else {
@@ -88,7 +89,7 @@ export class VuelosComponent implements OnInit {
         },
         error: (err) => {
           const msg = err.error?.message || 'Error al guardar el vuelo.';
-          alert(msg);
+          Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
         }
       });
     }
@@ -108,7 +109,7 @@ export class VuelosComponent implements OnInit {
       next: () => this.cargarVuelos(),
       error: (err) => {
         const msg = err.error?.message || 'Error al cambiar el estado del vuelo.';
-        alert(msg);
+        Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
       }
     });
   }
@@ -130,7 +131,7 @@ export class VuelosComponent implements OnInit {
       next: () => this.cargarVuelos(),
       error: (err) => {
         const msg = err.error?.message || 'Error al eliminar el vuelo.';
-        alert(msg);
+        Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
       }
     });
   }
@@ -138,7 +139,7 @@ export class VuelosComponent implements OnInit {
   obtenerNombreAvion(avionId: any): string {
     if (!avionId) return 'Sin Asignar';
     const a = this.aviones.find(item => item.id === Number(avionId));
-    return a ? a.modelo : `Avión #${avionId}`;
+    return a ? a.modelo : `AviÃ³n #${avionId}`;
   }
 
   limpiarFormulario(): void {

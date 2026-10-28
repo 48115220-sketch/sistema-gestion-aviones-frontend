@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
@@ -70,7 +71,7 @@ export class AvionesComponent implements OnInit {
         },
         error: (err) => {
           const msg = err.error?.message || 'Error al actualizar el avion.';
-          alert(msg);
+          Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
         }
       });
     } else {
@@ -81,7 +82,7 @@ export class AvionesComponent implements OnInit {
         },
         error: (err) => {
           const msg = err.error?.message || 'Error al registrar el avion.';
-          alert(msg);
+          Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
         }
       });
     }
@@ -100,7 +101,7 @@ export class AvionesComponent implements OnInit {
       next: () => this.cargarAviones(),
       error: (err) => {
         const msg = err.error?.message || 'Error al cambiar el estado del avion.';
-        alert(msg);
+        Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
       }
     });
   }

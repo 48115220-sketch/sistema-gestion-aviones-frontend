@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../../services/api.service';
@@ -67,7 +68,7 @@ export class PersonalComponent implements OnInit {
         error: (err) => {
           this.cargando = false;
           const msg = err.error?.message || 'Error al actualizar el registro de personal.';
-          alert(msg);
+          Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
         }
       });
     } else {
@@ -80,7 +81,7 @@ export class PersonalComponent implements OnInit {
         error: (err) => {
           this.cargando = false;
           const msg = err.error?.message || 'Error al registrar el personal.';
-          alert(msg);
+          Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
         }
       });
     }
@@ -102,7 +103,7 @@ export class PersonalComponent implements OnInit {
       next: () => this.cargarPersonal(),
       error: (err) => {
         const msg = err.error?.message || 'Error al eliminar el registro de personal.';
-        alert(msg);
+        Swal.fire({ title: 'Atención', text: msg, icon: 'warning', confirmButtonColor: '#0284c7' });
       }
     });
   }
